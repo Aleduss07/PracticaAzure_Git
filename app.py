@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
 
 
-@app.route("/enviar-alerta", methods=["POST"]) Práctica
+@app.route("/enviar-alerta", methods=["POST"])
 def enviar_alerta():
 try:
 data = request.get_json()

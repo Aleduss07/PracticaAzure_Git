@@ -1,6 +1,8 @@
 import os
 from flask import Flask, jsonify, request
 from mssql_python import connect
+import smtplib
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
@@ -136,15 +138,22 @@ def enviar_alerta():
         
         if not destino or not asunto or not mensaje:
             return jsonify({"success": False, "message": "Faltan datos"}), 400
-            
-        # Nota: Asegúrate de tener definida la función enviar_correo_alerta
-        # enviar_correo_alerta(asunto, mensaje, destino)
         
-        return jsonify({"success": True, "message": "Correo enviado"})
+        # --- LÓGICA DE ENVÍO REAL USANDO TUS VARIABLES DE RENDER ---
+        user = os.getenv("EMAIL_USER")
+        password = os.getenv("EMAIL_PASSWORD")
+
+        msg = MIMEText(mensaje)
+        msg['Subject'] = asunto
+        msg['From'] = user
+        msg['To'] = destino
+
+        # Conexión segura con Gmail
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(user, password)
+            server.sendmail(user, destino, msg.as_string())
+            
+        return jsonify({"success": True, "message": "Correo enviado físicamente a " + destino})
+        
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
-# --- INICIO DE LA APP ---
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)

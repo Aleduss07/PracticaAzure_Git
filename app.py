@@ -125,3 +125,28 @@ def listar_productos():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
+
+
+@app.route("/enviar-alerta", methods=["POST"]) Práctica
+def enviar_alerta():
+try:
+data = request.get_json()
+destino = data.get("to")
+asunto = data.get("subject")
+mensaje = data.get("message")
+if not destino or not asunto or not mensaje:
+return jsonify({
+"success": False,
+"message": "Faltan datos"
+}), 400
+enviar_correo_alerta(asunto, mensaje, destino)
+return jsonify({
+"success": True,
+"message": "Correo enviado"
+})
+except Exception as e:
+return jsonify({
+"success": False,
+"error": str(e)
+}), 500

@@ -1,10 +1,12 @@
 import os
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from mssql_python import connect
 import resend
 import threading
 
 app = Flask(__name__)
+CORS(app) # <--- 2. Habilita CORS para todas las rutas
 
 
 def get_connection():
